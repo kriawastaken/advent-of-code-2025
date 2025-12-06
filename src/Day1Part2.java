@@ -1,7 +1,7 @@
 import java.io.File;
 import java.util.Scanner;
 
-public class Day1 {
+public class Day1Part2 {
     public static void main(String[] args) throws Exception {
         File currentDir = new File(".");
         File parentDir = currentDir.getParentFile();
@@ -17,42 +17,53 @@ public class Day1 {
             String instruction = reader.nextLine();
             String rotation = instruction.substring(0, 1);
             int magnitude = Integer.parseInt(instruction.substring(1, instruction.length()));
+            int localZeroCount = 0;
 
-            // 100 rotations = same spot we started at...
-            // so we can just remove them.
             if (magnitude > 100) {
                 int hundreths = (int) Math.floor(magnitude / 100);
                 magnitude = (magnitude - (hundreths * 100));
+                localZeroCount = localZeroCount + hundreths;
             }
 
             if (rotation.equalsIgnoreCase("R")) {
-                dial = dial + magnitude;
+                int initialDial = dial;
+                dial = initialDial + magnitude;
+
+                if (dial > 100 && initialDial != 0) {
+                    localZeroCount++;
+                }
             }
 
             if (rotation.equalsIgnoreCase("L")) {
-                dial = dial - magnitude;
+                int initialDial = dial;
+                dial = initialDial - magnitude;
+
+                if (dial < 0 && initialDial != 0) {
+                    localZeroCount++;
+                }
             }
 
-            // clean up e.g. a rotation of +23 from 97,
-            // causing dial to equal 120, by subtracting
-            // a hundred so dial equals 20.
             if (dial > 99) {
                 dial = dial - 100;
             }
 
-            // clean up e.g. a rotation of -14 from 6,
-            // causing dial to equal -8, by adding
-            // a hundred so dial equals 92.
             if (dial < 0) {
                 dial = dial + 100;
             }
 
             if (dial == 0) {
-                zeroCount++;
+                localZeroCount++;
             }
 
-            System.out.println("The dial is rotated " + instruction + " to point at " +
-                    dial + ".");
+            System.out.print("The dial is rotated " + instruction + " to point at " +
+                    dial);
+            if (localZeroCount > 0) {
+                System.out.println("; during this rotation, it points at zero " + localZeroCount + " times.");
+            } else {
+                System.out.println(".");
+            }
+
+            zeroCount = zeroCount + localZeroCount;
         }
 
         System.out.println(
